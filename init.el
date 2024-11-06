@@ -1,3 +1,8 @@
+;; Stop emacs from littering config file
+(setq custom-file "~/.emacs.d/custom.el")
+(when (file-exists-p custom-file)
+  (load custom-file))
+
 ;; Disable UI elements early in startup
 (tool-bar-mode -1)
 (menu-bar-mode -1)
@@ -53,20 +58,24 @@
   :ensure t)
 
 (use-package vertico
+  :ensure t
   :init
   (vertico-mode t))
 
 (use-package marginalia
+  :ensure t
   :init
   (marginalia-mode t))
 
 (use-package orderless
+  :ensure t
   :custom
   (completion-styles '(orderless basic))
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles . (partial-completion))))))
 
 (use-package gruber-darker-theme
+  :ensure t
   :config
   (load-theme 'gruber-darker t))
 
@@ -90,6 +99,7 @@
 
 ;; LSP configuration
 (use-package lsp-mode
+  :ensure t
   :hook ((prog-mode . lsp-deferred))
   :commands lsp-deferred
   :custom
@@ -122,6 +132,7 @@
 
 ;; Enable LSP UI features for documentation
 (use-package lsp-ui
+  :ensure t
   :after lsp-mode
   :custom
   (lsp-ui-doc-enable t)  ; Enable documentation on hover
@@ -186,17 +197,3 @@
 ;; Performance optimizations
 (setq gc-cons-threshold 100000000)
 (setq read-process-output-max (* 1024 1024))
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(magit kind-icon cape corfu lsp-ui typescript-mode go-mode lsp-mode consult tree-sitter-langs tree-sitter gruber-darker-theme orderless marginalia vertico)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
