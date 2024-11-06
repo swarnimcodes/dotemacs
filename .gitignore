@@ -1,3 +1,9 @@
+# Custom
+elpa/
+eln-cache/
+auto-save-list/
+
+
 # Compiled
 *.elc
 

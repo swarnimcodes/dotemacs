@@ -1,21 +1,35 @@
-(tool-bar-mode 0)
-(menu-bar-mode 0)
-(scroll-bar-mode 0)
+;; Disable UI elements early in startup
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
+
+;; Basic settings
 (column-number-mode 1)
 (global-display-line-numbers-mode 1)
 (setq display-line-numbers-type 'relative)
-(set-frame-font "Iosevka-25")
-(setq inhibit-startup-screen 1)
+(set-frame-font "Iosevka Nerd Font-18" nil t)
+(setq inhibit-startup-screen t)
 (setq-default pixel-scroll-precision-mode t)
 (setq-default line-spacing 0.12)
 (setq make-backup-files nil)
+(setq create-lockfiles nil)
+(setq auto-save-default nil)
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 
+;; Package management setup
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
+;; Ensure use-package is installed
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(require 'use-package)
+(setq use-package-always-ensure t)
+
+;; Line movement functions
 (defun move-line-up ()
   "Move up the current line."
   (interactive)
@@ -35,25 +49,154 @@
 (global-set-key (kbd "M-<down>")  'move-line-down)
 
 ;; Install and configure packages
-(dolist (package '(vertico marginalia orderless gruber-darker-theme
-                           tree-sitter tree-sitter-langs
-                           consult lsp-mode
-                           ))
-  (unless (package-installed-p package)
-    (package-refresh-contents)
-    (package-install package)))
+(use-package magit
+  :ensure t)
 
-;; Consult configuration
-(global-set-key (kbd "C-s") 'consult-line)
-(global-set-key (kbd "C-x b") 'consult-buffer)
-(global-set-key (kbd "C-c f") 'consult-find)
-(global-set-key (kbd "C-c g") 'consult-ripgrep)
+(use-package vertico
+  :init
+  (vertico-mode t))
+
+(use-package marginalia
+  :init
+  (marginalia-mode t))
+
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles . (partial-completion))))))
+
+(use-package gruber-darker-theme
+  :config
+  (load-theme 'gruber-darker t))
+
+(use-package tree-sitter
+  :ensure t
+  :config
+  (global-tree-sitter-mode)
+  (add-hook 'prog-mode-hook #'tree-sitter-hl-mode))
+
+(use-package tree-sitter-langs
+  :ensure t
+  :after tree-sitter
+  :config
+  (tree-sitter-require 'typescript))
+
+(use-package go-mode
+  :ensure t)
+
+(use-package typescript-mode
+  :ensure t)
+
+;; LSP configuration
+(use-package lsp-mode
+  :hook ((prog-mode . lsp-deferred))
+  :commands lsp-deferred
+  :custom
+  (lsp-keymap-prefix "C-c l")
+  (lsp-auto-guess-root t)
+  (lsp-log-io nil)
+  ;; Completion related settings
+  (lsp-completion-provider :none) ;; we use Corfu!
+  (lsp-completion-enable t)
+  (lsp-enable-symbol-highlighting t)
+  (lsp-enable-on-type-formatting nil)
+  (lsp-signature-auto-activate t)
+  (lsp-signature-render-documentation t)
+  (lsp-modeline-code-actions-enable nil)
+  (lsp-modeline-diagnostics-enable nil)
+  (lsp-headerline-breadcrumb-enable nil)
+  (lsp-semantic-tokens-enable nil)
+  (lsp-enable-folding nil)
+  (lsp-enable-snippet nil)
+  (lsp-enable-file-watchers nil)
+  :config
+  ;; Configure LSP completion
+  (setq lsp-completion-enable-additional-text-edit nil)
+  ;; Add completion to LSP completion list
+  (add-hook 'lsp-completion-mode-hook
+            (lambda ()
+              (setf (alist-get 'lsp-capf completion-category-defaults)
+                    '((styles . (orderless))))))
+  )
+
+;; Enable LSP UI features for documentation
+(use-package lsp-ui
+  :after lsp-mode
+  :custom
+  (lsp-ui-doc-enable t)  ; Enable documentation on hover
+  (lsp-ui-doc-show-with-cursor t)  ; Show doc when cursor is on symbol
+  (lsp-ui-doc-position 'at-point)  ; Show doc at point (alternatively 'top' or 'bottom')
+  (lsp-ui-doc-delay 0.2)  ; Small delay before showing documentation
+  (lsp-ui-doc-max-height 30)  ; Maximum height of doc window
+  (lsp-ui-sideline-enable nil)  ; Enable sideline information
+  (lsp-ui-sideline-show-hover nil)  ; Show hover information in sideline
+  (lsp-ui-sideline-show-diagnostics nil)  ; Show diagnostics in sideline
+  (lsp-ui-sideline-show-code-actions nil))  ; Show code actions in sideline
 
 
-(vertico-mode t)
-(marginalia-mode t)
-(setq completion-styles '(orderless basic)
-      completion-category-defaults nil
-      completion-category-overrides '((file (styles . (partial-completion)))))
+;; Corfu setup for completion popup
+(use-package corfu
+  :ensure t
+  :custom
+  (corfu-auto t)          ;; Enable auto completion
+  (corfu-auto-delay 0.0)  ;; No delay for completion
+  (corfu-auto-prefix 0)   ;; Complete after 2 characters
+  (corfu-preview-current nil)    ;; Disable current candidate preview
+  (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  (corfu-quit-no-match 'separator) ;; Don't quit if there is no match
+  :bind
+  (:map corfu-map
+        ("C-n" . corfu-next)
+        ("C-p" . corfu-previous)
+        ("TAB" . corfu-insert)
+        ("[tab]" . corfu-insert)
+        )
+  :init
+  (global-corfu-mode))
 
-(load-theme 'gruber-darker t)
+;; Cape for completion extensions
+(use-package cape
+  :ensure t
+  :init
+  ;; Add useful defaults completion sources from Cape
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  :config
+  ;; Silence the pcomplete capf, no errors or messages!
+  (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-silent)
+  ;; Ensure that pcomplete does not write to the buffer
+  ;; and behaves as a pure `completion-at-point-function'
+  (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify))
+
+;; Optional: Kind-icon for prettier completion icons
+(use-package kind-icon
+  :ensure t
+  :after corfu
+  :custom
+  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
+
+;; Bind completion commands
+(global-set-key (kbd "C-c p") #'completion-at-point) ;; Manual completion trigger
+(global-set-key (kbd "C-c d") #'cape-dabbrev)        ;; Word completion
+
+;; Performance optimizations
+(setq gc-cons-threshold 100000000)
+(setq read-process-output-max (* 1024 1024))
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(magit kind-icon cape corfu lsp-ui typescript-mode go-mode lsp-mode consult tree-sitter-langs tree-sitter gruber-darker-theme orderless marginalia vertico)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
