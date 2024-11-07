@@ -20,11 +20,15 @@
 (setq create-lockfiles nil)
 (setq auto-save-default nil)
 (setq-default indent-tabs-mode nil)
-(setq-default tab-width 4)
+;; (setq-default tab-width 4)
+(setq js-indent-level 2)
+(setq typescript-indent-level 2)
+(setq js-switch-indent-offset 2)
 
 ;; Package management setup
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 (package-initialize)
 
 ;; Ensure use-package is installed
@@ -54,6 +58,18 @@
 (global-set-key (kbd "M-<down>")  'move-line-down)
 
 ;; Install and configure packages
+(use-package multiple-cursors
+  :ensure t
+  :bind (:map global-map
+         ("C-S-c C-S-c" . mc/edit-lines)
+         ("C->" . mc/mark-next-like-this)
+         ("C-<" . mc/mark-previous-like-this)
+         )
+  )
+
+(use-package eat
+  :ensure t)
+
 (use-package magit
   :ensure t)
 
@@ -111,8 +127,8 @@
   (lsp-completion-enable t)
   (lsp-enable-symbol-highlighting t)
   (lsp-enable-on-type-formatting nil)
-  (lsp-signature-auto-activate t)
-  (lsp-signature-render-documentation t)
+  (lsp-signature-auto-activate nil)
+  (lsp-signature-render-documentation nil)
   (lsp-modeline-code-actions-enable nil)
   (lsp-modeline-diagnostics-enable nil)
   (lsp-headerline-breadcrumb-enable nil)
@@ -152,7 +168,7 @@
   :custom
   (corfu-auto t)          ;; Enable auto completion
   (corfu-auto-delay 0.0)  ;; No delay for completion
-  (corfu-auto-prefix 0)   ;; Complete after 2 characters
+  (corfu-auto-prefix 2)   ;; Complete after 2 characters
   (corfu-preview-current nil)    ;; Disable current candidate preview
   (corfu-on-exact-match nil)     ;; Configure handling of exact matches
   (corfu-quit-no-match 'separator) ;; Don't quit if there is no match
