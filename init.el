@@ -58,6 +58,11 @@
 (global-set-key (kbd "M-<down>")  'move-line-down)
 
 ;; Install and configure packages
+(use-package gruber-darker-theme
+  :ensure t
+  :config
+  (load-theme 'gruber-darker t))
+
 (use-package multiple-cursors
   :ensure t
   :bind (:map global-map
@@ -90,11 +95,6 @@
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles . (partial-completion))))))
 
-(use-package gruber-darker-theme
-  :ensure t
-  :config
-  (load-theme 'gruber-darker t))
-
 (use-package tree-sitter
   :ensure t
   :config
@@ -107,11 +107,17 @@
   :config
   (tree-sitter-require 'typescript))
 
+;; Languages
 (use-package go-mode
   :ensure t)
 
 (use-package typescript-mode
   :ensure t)
+
+(setq treesit-language-source-alist '((c3 "https://github.com/c3lang/tree-sitter-c3")))
+(add-to-list 'load-path "~/.emacs.d/extras/")
+(require 'c3-ts-mode)
+(setq treesit-font-lock-level 4)
 
 ;; LSP configuration
 (use-package lsp-mode

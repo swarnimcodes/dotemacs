@@ -6,6 +6,7 @@ transient/
 custom.el
 .cache/
 .lsp-session-v1
+tree-sitter/
 
 # Compiled
 *.elc
