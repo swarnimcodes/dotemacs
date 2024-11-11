@@ -60,10 +60,10 @@
 (global-set-key (kbd "M-<down>")  'move-line-down)
 
 ;; Install and configure packages
-(use-package gruber-darker-theme
-  :ensure t
-  :config
-  (load-theme 'gruber-darker t))
+;; (use-package gruber-darker-theme
+;;   :ensure t
+;;   :config
+;;   (load-theme 'gruber-darker t))
 
 (use-package doom-themes
   :ensure t
@@ -73,6 +73,10 @@
   (load-theme 'doom-one t)
   (doom-themes-org-config)
   )
+
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1))
 
 (use-package multiple-cursors
   :ensure t
@@ -139,8 +143,9 @@
   (lsp-keymap-prefix "C-c l")
   (lsp-auto-guess-root t)
   (lsp-log-io nil)
+  (lsp-warn-no-matched-client nil)
   ;; Completion related settings
-  (lsp-completion-provider :none) ;; we use Corfu!
+  (lsp-completion-provider :none)
   (lsp-completion-enable t)
   (lsp-enable-symbol-highlighting t)
   (lsp-enable-on-type-formatting nil)
@@ -177,55 +182,6 @@
   (lsp-ui-sideline-show-hover nil)  ; Show hover information in sideline
   (lsp-ui-sideline-show-diagnostics nil)  ; Show diagnostics in sideline
   (lsp-ui-sideline-show-code-actions nil))  ; Show code actions in sideline
-
-
-;; Corfu setup for completion popup
-(use-package corfu
-  :ensure t
-  :custom
-  (corfu-auto t)          ;; Enable auto completion
-  (corfu-auto-delay 0.0)  ;; No delay for completion
-  (corfu-auto-prefix 2)   ;; Complete after 2 characters
-  (corfu-preview-current nil)    ;; Disable current candidate preview
-  (corfu-on-exact-match nil)     ;; Configure handling of exact matches
-  (corfu-quit-no-match 'separator) ;; Don't quit if there is no match
-  :bind
-  (:map corfu-map
-        ("C-n" . corfu-next)
-        ("C-p" . corfu-previous)
-        ("TAB" . corfu-insert)
-        ("[tab]" . corfu-insert)
-        )
-  :init
-  (global-corfu-mode))
-
-;; Cape for completion extensions
-(use-package cape
-  :ensure t
-  :init
-  ;; Add useful defaults completion sources from Cape
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  :config
-  ;; Silence the pcomplete capf, no errors or messages!
-  (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-silent)
-  ;; Ensure that pcomplete does not write to the buffer
-  ;; and behaves as a pure `completion-at-point-function'
-  (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify))
-
-;; Optional: Kind-icon for prettier completion icons
-(use-package kind-icon
-  :ensure t
-  :after corfu
-  :custom
-  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
-  :config
-  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
-
-
-;; Bind completion commands
-(global-set-key (kbd "C-c p") #'completion-at-point) ;; Manual completion trigger
-(global-set-key (kbd "C-c d") #'cape-dabbrev)        ;; Word completion
 
 ;; Performance optimizations
 (setq gc-cons-threshold 100000000)
