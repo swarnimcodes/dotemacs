@@ -9,9 +9,11 @@
 (scroll-bar-mode -1)
 
 ;; Basic settings
+(setq-default show-trailing-whitespace t)
 (column-number-mode 1)
 (global-display-line-numbers-mode 1)
 (setq display-line-numbers-type 'relative)
+(add-to-list 'default-frame-alist '(font . "Iosevka Nerd Font-18"))
 (set-frame-font "Iosevka Nerd Font-18" nil t)
 (setq inhibit-startup-screen t)
 (setq-default pixel-scroll-precision-mode t)
@@ -158,7 +160,7 @@
   :after lsp-mode
   :custom
   (lsp-ui-doc-enable t)  ; Enable documentation on hover
-  (lsp-ui-doc-show-with-cursor t)  ; Show doc when cursor is on symbol
+  (lsp-ui-doc-show-with-cursor nil)  ; Show doc when cursor is on symbol
   (lsp-ui-doc-position 'at-point)  ; Show doc at point (alternatively 'top' or 'bottom')
   (lsp-ui-doc-delay 0.2)  ; Small delay before showing documentation
   (lsp-ui-doc-max-height 30)  ; Maximum height of doc window

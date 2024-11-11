@@ -8,8 +8,10 @@
         ignore-preserving-kill-region
         keyboard-escape-quit
         lsp-ui-doc--handle-mouse-movement
+        overwrite-mode
         ))
 
 (setq mc/cmds-to-run-once
       '(
+        mouse-set-region
         ))
