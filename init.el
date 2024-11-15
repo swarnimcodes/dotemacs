@@ -21,6 +21,7 @@
 (setq make-backup-files nil)
 (setq create-lockfiles nil)
 (setq auto-save-default nil)
+(setq dired-dwim-target t)
 (setq-default indent-tabs-mode nil)
 ;; (setq-default tab-width 4)
 (setq js-indent-level 2)
@@ -32,6 +33,23 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 (package-initialize)
+
+;; Straight.el -- https://github.com/radian-software/straight.el
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        (or (bound-and-true-p straight-base-dir)
+            user-emacs-directory)))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
 ;; Ensure use-package is installed
 (unless (package-installed-p 'use-package)
@@ -90,8 +108,12 @@
 (use-package eat
   :ensure t)
 
-(use-package magit
-  :ensure t)
+;; Install Magit from main branch
+(straight-use-package
+ '(magit :type git
+         :host github
+         :repo "magit/magit"
+         :branch "main"))
 
 (use-package vertico
   :ensure t

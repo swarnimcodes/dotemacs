@@ -9,6 +9,7 @@ custom.el
 tree-sitter/
 projects
 eshell/
+straight/
 
 # Compiled
 *.elc

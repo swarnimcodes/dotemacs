@@ -3,9 +3,9 @@
 
 (setq mc/cmds-to-run-for-all
       '(
-        corfu-insert
         handle-switch-frame
         ignore-preserving-kill-region
+        indent-for-tab-command
         keyboard-escape-quit
         lsp-ui-doc--handle-mouse-movement
         overwrite-mode
