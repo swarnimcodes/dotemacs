@@ -82,6 +82,8 @@
 (global-set-key (kbd "M-<down>")  'move-line-down)
 
 ;; Install and configure packages
+(use-package expand-region
+  :bind ("C-=" . er/expand-region))
 
 (use-package nerd-icons
   :ensure t)
