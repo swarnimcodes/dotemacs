@@ -74,10 +74,44 @@
   (forward-line -1)
   (indent-according-to-mode))
 
+;;  Custom Keybindings
+(global-set-key (kbd "M-m") 'compile)
+(global-set-key (kbd "M-i") 'back-to-indentation)
+
 (global-set-key (kbd "M-<up>")  'move-line-up)
 (global-set-key (kbd "M-<down>")  'move-line-down)
 
 ;; Install and configure packages
+
+(use-package nerd-icons
+  :ensure t)
+
+(use-package org
+  :ensure t
+  :config
+  ;; Basic settings
+  (setq org-startup-indented t)           ; Enable org-indent-mode by default
+  (setq org-startup-folded 'overview)     ; Start files folded
+  (setq org-return-follows-link t)        ; Make RET follow links
+  (setq org-hide-emphasis-markers t)      ; Hide formatting characters
+  (setq org-pretty-entities t)            ; Show entities as UTF8 characters
+)
+
+(use-package indent-bars
+  :ensure t
+  :config
+  (setq
+    indent-bars-color '(highlight :face-bg t :blend 0.2)
+    indent-bars-pattern "."
+    indent-bars-width-frac 0.1
+    indent-bars-pad-frac 0.1
+    indent-bars-zigzag nil
+    indent-bars-color-by-depth nil
+    indent-bars-highlight-current-depth nil
+    indent-bars-display-on-blank-lines nil)
+  :hook (prog-mode . indent-bars-mode)
+  )
+
 (use-package gruber-darker-theme
   :ensure t
   :config

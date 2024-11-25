@@ -7,8 +7,11 @@
         ignore-preserving-kill-region
         indent-for-tab-command
         keyboard-escape-quit
+        lsp-format-buffer
         lsp-ui-doc--handle-mouse-movement
+        mark-word
         overwrite-mode
+        switch-to-buffer
         ))
 
 (setq mc/cmds-to-run-once
