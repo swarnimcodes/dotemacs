@@ -12,6 +12,7 @@
         mark-word
         overwrite-mode
         switch-to-buffer
+        undo-redo
         ))
 
 (setq mc/cmds-to-run-once

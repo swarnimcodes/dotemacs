@@ -85,6 +85,34 @@
 (global-set-key (kbd "M-<down>")  'move-line-down)
 
 ;; Install and configure packages
+
+;; Tramp Configuration
+(use-package tramp
+  :ensure t
+  :config
+  ;; Set default connection method (optional)
+  (setq tramp-default-method "ssh")
+  (setq tramp-persistent-connections t)
+
+  ;; Improve performance for remote file editing
+  (setq tramp-auto-save-directory "~/.emacs.d/tramp-autosave")
+  (setq tramp-completion-reread-directory-timeout nil)
+
+  ;; Increase connection timeout (useful for slow networks)
+  (setq tramp-connection-timeout 10)
+
+  ;; Optional: Enable SSH control master for faster connections
+  (setq tramp-ssh-controlmaster-options
+        "-o ControlPath=~/.ssh/controlmasters/%%r@%%h:%%p
+         -o ControlMaster=auto -o ControlPersist=10m")
+
+  ;; Prevent version control systems from accessing remote directories
+  (setq vc-ignore-dir-regexp
+        (format "\\(%s\\)\\|\\(%s\\)"
+                vc-ignore-dir-regexp
+                tramp-file-name-regexp))
+)
+
 (use-package expand-region
   :bind ("C-=" . er/expand-region))
 
