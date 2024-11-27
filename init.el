@@ -78,6 +78,9 @@
 (global-set-key (kbd "M-m") 'compile)
 (global-set-key (kbd "M-i") 'back-to-indentation)
 
+(global-set-key (kbd "M-n") 'next-error)
+(global-set-key (kbd "M-p") 'previous-error)
+
 (global-set-key (kbd "M-<up>")  'move-line-up)
 (global-set-key (kbd "M-<down>")  'move-line-down)
 
