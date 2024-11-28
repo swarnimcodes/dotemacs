@@ -75,6 +75,8 @@
   (indent-according-to-mode))
 
 ;;  Custom Keybindings
+(global-set-key (kbd "C-`") 'other-window)
+
 (global-set-key (kbd "M-m") 'compile)
 (global-set-key (kbd "M-i") 'back-to-indentation)
 
