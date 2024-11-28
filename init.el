@@ -214,6 +214,9 @@
   (tree-sitter-require 'typescript))
 
 ;; Languages
+(use-package gleam-ts-mode
+  :mode (rx ".gleam" eos))
+
 (use-package go-mode
   :ensure t)
 
