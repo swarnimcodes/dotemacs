@@ -7,9 +7,11 @@
         ignore-preserving-kill-region
         indent-for-tab-command
         keyboard-escape-quit
+        kill-region
         lsp-format-buffer
         lsp-ui-doc--handle-mouse-movement
         mark-word
+        multiple-cursors-mode
         overwrite-mode
         switch-to-buffer
         undo-redo

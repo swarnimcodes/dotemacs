@@ -34,23 +34,6 @@
 (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 (package-initialize)
 
-;; Straight.el -- https://github.com/radian-software/straight.el
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name
-        "straight/repos/straight.el/bootstrap.el"
-        (or (bound-and-true-p straight-base-dir)
-            user-emacs-directory)))
-      (bootstrap-version 7))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
 ;; Ensure use-package is installed
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -86,40 +69,38 @@
 (global-set-key (kbd "M-<up>")  'move-line-up)
 (global-set-key (kbd "M-<down>")  'move-line-down)
 
-;; Install and configure packages
-
-;; Tramp Configuration
-(use-package tramp
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Install and configure packages ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package treesit-auto
   :ensure t
   :config
-  ;; Set default connection method (optional)
-  (setq tramp-default-method "ssh")
-  (setq tramp-persistent-connections t)
+  (global-treesit-auto-mode))
 
-  ;; Improve performance for remote file editing
-  (setq tramp-auto-save-directory "~/.emacs.d/tramp-autosave")
-  (setq tramp-completion-reread-directory-timeout nil)
+(use-package lsp-mode
+  :ensure t
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  :hook
+  (tsx-ts-mode . lsp-deferred)
+  (jsx-ts-mode . lsp-deferred)
+  (typescript-ts-mode . lsp-deferred)
+  ;; Fallback modes
+  (typescript-mode . lsp-deferred)
+  (js-mode . lsp-deferred)
 
-  ;; Increase connection timeout (useful for slow networks)
-  (setq tramp-connection-timeout 10)
+  (js-ts-mode . lsp-deferred)
+  (html-mode . lsp-deferred)
+  :commands lsp)
 
-  ;; Optional: Enable SSH control master for faster connections
-  (setq tramp-ssh-controlmaster-options
-        "-o ControlPath=~/.ssh/controlmasters/%%r@%%h:%%p
-         -o ControlMaster=auto -o ControlPersist=10m")
+(use-package lsp-ui :commands lsp-ui-mode)
 
-  ;; Prevent version control systems from accessing remote directories
-  (setq vc-ignore-dir-regexp
-        (format "\\(%s\\)\\|\\(%s\\)"
-                vc-ignore-dir-regexp
-                tramp-file-name-regexp))
-)
+(use-package apheleia
+  :ensure t)
+(apheleia-global-mode +1)
 
 (use-package expand-region
   :bind ("C-=" . er/expand-region))
-
-(use-package nerd-icons
-  :ensure t)
 
 (use-package org
   :ensure t
@@ -130,59 +111,47 @@
   (setq org-return-follows-link t)        ; Make RET follow links
   (setq org-hide-emphasis-markers t)      ; Hide formatting characters
   (setq org-pretty-entities t)            ; Show entities as UTF8 characters
-)
-
-(use-package indent-bars
-  :ensure t
-  :config
-  (setq
-    indent-bars-color '(highlight :face-bg t :blend 0.2)
-    indent-bars-pattern "."
-    indent-bars-width-frac 0.1
-    indent-bars-pad-frac 0.1
-    indent-bars-zigzag nil
-    indent-bars-color-by-depth nil
-    indent-bars-highlight-current-depth nil
-    indent-bars-display-on-blank-lines nil)
-  :hook (prog-mode . indent-bars-mode)
   )
 
-(use-package gruber-darker-theme
-  :ensure t
-  :config
-  (load-theme 'gruber-darker t))
-
-;; (use-package doom-themes
+;; (use-package gruber-darker-theme
 ;;   :ensure t
 ;;   :config
-;;   (setq doom-themes-enable-bold t
-;;         doom-themes-enable-italic t)
-;;   (load-theme 'doom-one t)
-;;   (doom-themes-org-config)
-;;   )
+;;   (load-theme 'gruber-darker t))
 
-;; (use-package doom-modeline
-;;   :ensure t
-;;   :init (doom-modeline-mode 1))
+;; (load-theme 'modus-vivendi)
+
+(use-package nerd-icons
+  :ensure t)
+
+(use-package doom-themes
+  :ensure t
+  :config
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t)
+  (load-theme 'doom-gruvbox t)
+  (doom-themes-org-config)
+  )
+
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1))
 
 (use-package multiple-cursors
   :ensure t
   :bind (:map global-map
-         ("C-S-c C-S-c" . mc/edit-lines)
-         ("C->" . mc/mark-next-like-this)
-         ("C-<" . mc/mark-previous-like-this)
-         )
+              ("C-S-c C-S-c" . mc/edit-lines)
+              ("C->" . mc/mark-next-like-this)
+              ("C-<" . mc/mark-previous-like-this)
+              )
   )
+
 
 (use-package eat
   :ensure t)
 
 ;; Install Magit from main branch
-(straight-use-package
- '(magit :type git
-         :host github
-         :repo "magit/magit"
-         :branch "main"))
+(use-package magit
+  :ensure t)
 
 (use-package vertico
   :ensure t
@@ -201,81 +170,15 @@
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles . (partial-completion))))))
 
-(use-package tree-sitter
-  :ensure t
-  :config
-  (global-tree-sitter-mode)
-  (add-hook 'prog-mode-hook #'tree-sitter-hl-mode))
-
-(use-package tree-sitter-langs
-  :ensure t
-  :after tree-sitter
-  :config
-  (tree-sitter-require 'typescript))
-
 ;; Languages
-(use-package gleam-ts-mode
-  :mode (rx ".gleam" eos))
-
 (use-package go-mode
   :ensure t)
 
 (use-package typescript-mode
-  :ensure t)
-
-(setq treesit-language-source-alist '((c3 "https://github.com/c3lang/tree-sitter-c3")))
-(add-to-list 'load-path "~/.emacs.d/extras/")
-(require 'c3-ts-mode)
-(setq treesit-font-lock-level 4)
-
-;; LSP configuration
-(use-package lsp-mode
-  :ensure t
-  :hook ((prog-mode . lsp-deferred))
-  :commands lsp-deferred
-  :custom
-  (lsp-keymap-prefix "C-c l")
-  (lsp-auto-guess-root t)
-  (lsp-log-io nil)
-  (lsp-warn-no-matched-client nil)
-  ;; Completion related settings
-  (lsp-completion-provider :none)
-  (lsp-completion-enable t)
-  (lsp-enable-symbol-highlighting t)
-  (lsp-enable-on-type-formatting nil)
-  (lsp-signature-auto-activate nil)
-  (lsp-signature-render-documentation nil)
-  (lsp-modeline-code-actions-enable nil)
-  (lsp-modeline-diagnostics-enable nil)
-  (lsp-headerline-breadcrumb-enable nil)
-  (lsp-semantic-tokens-enable nil)
-  (lsp-enable-folding nil)
-  (lsp-enable-snippet nil)
-  (lsp-enable-file-watchers nil)
-  :config
-  ;; Configure LSP completion
-  (setq lsp-completion-enable-additional-text-edit nil)
-  ;; Add completion to LSP completion list
-  (add-hook 'lsp-completion-mode-hook
-            (lambda ()
-              (setf (alist-get 'lsp-capf completion-category-defaults)
-                    '((styles . (orderless))))))
-  )
-
-;; Enable LSP UI features for documentation
-(use-package lsp-ui
-  :ensure t
   :after lsp-mode
-  :custom
-  (lsp-ui-doc-enable t)  ; Enable documentation on hover
-  (lsp-ui-doc-show-with-cursor nil)  ; Show doc when cursor is on symbol
-  (lsp-ui-doc-position 'at-point)  ; Show doc at point (alternatively 'top' or 'bottom')
-  (lsp-ui-doc-delay 0.2)  ; Small delay before showing documentation
-  (lsp-ui-doc-max-height 30)  ; Maximum height of doc window
-  (lsp-ui-sideline-enable nil)  ; Enable sideline information
-  (lsp-ui-sideline-show-hover nil)  ; Show hover information in sideline
-  (lsp-ui-sideline-show-diagnostics nil)  ; Show diagnostics in sideline
-  (lsp-ui-sideline-show-code-actions nil))  ; Show code actions in sideline
+  :config
+  (add-to-list 'lsp-disabled-clients '(typescript-mode . typescript-language-server))
+  (add-to-list 'lsp-enabled-clients 'ts-ls))
 
 ;; Performance optimizations
 (setq gc-cons-threshold 100000000)
