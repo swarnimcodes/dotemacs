@@ -91,6 +91,10 @@
 
   (js-ts-mode . lsp-deferred)
   (html-mode . lsp-deferred)
+  :config
+  (setq lsp-signature-render-documentation nil)  ; Use nil instead of false
+  (setq lsp-log-io nil)        ; Disable logging if not needed
+  (setq lsp-ui-doc-enable t)                 ; Enable documentation popup
   :commands lsp)
 
 (use-package lsp-ui :commands lsp-ui-mode)
@@ -113,28 +117,28 @@
   (setq org-pretty-entities t)            ; Show entities as UTF8 characters
   )
 
-;; (use-package gruber-darker-theme
-;;   :ensure t
-;;   :config
-;;   (load-theme 'gruber-darker t))
+(use-package gruber-darker-theme
+  :ensure t
+  :config
+  (load-theme 'gruber-darker t))
 
 ;; (load-theme 'modus-vivendi)
 
 (use-package nerd-icons
   :ensure t)
 
-(use-package doom-themes
-  :ensure t
-  :config
-  (setq doom-themes-enable-bold t
-        doom-themes-enable-italic t)
-  (load-theme 'doom-gruvbox t)
-  (doom-themes-org-config)
-  )
+;; (use-package doom-themes
+;;   :ensure t
+;;   :config
+;;   (setq doom-themes-enable-bold t
+;;         doom-themes-enable-italic t)
+;;   (load-theme 'doom-gruvbox t)
+;;   (doom-themes-org-config)
+;;   )
 
-(use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1))
+;; (use-package doom-modeline
+;;   :ensure t
+;;   :init (doom-modeline-mode 1))
 
 (use-package multiple-cursors
   :ensure t
