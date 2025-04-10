@@ -10,11 +10,13 @@
         kill-region
         lsp-format-buffer
         lsp-ui-doc--handle-mouse-movement
+        magit-status
         mark-word
         multiple-cursors-mode
         overwrite-mode
         switch-to-buffer
         undo-redo
+        upcase-char
         ))
 
 (setq mc/cmds-to-run-once

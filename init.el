@@ -13,8 +13,8 @@
 (column-number-mode 1)
 (global-display-line-numbers-mode 1)
 (setq display-line-numbers-type 'relative)
-(add-to-list 'default-frame-alist '(font . "Iosevka Nerd Font-18"))
-(set-frame-font "Iosevka Nerd Font-18" nil t)
+(add-to-list 'default-frame-alist '(font . "Iosevka Nerd Font-16"))
+(set-frame-font "Iosevka Nerd Font-16" nil t)
 (setq inhibit-startup-screen t)
 (setq-default pixel-scroll-precision-mode t)
 (setq-default line-spacing 0.12)
@@ -77,6 +77,9 @@
   :config
   (global-treesit-auto-mode))
 
+(use-package htmlize
+  :ensure t)
+
 (use-package lsp-mode
   :ensure t
   :init
@@ -124,15 +127,15 @@
 
 ;; (load-theme 'modus-vivendi)
 
-(use-package nerd-icons
-  :ensure t)
+;; (use-package nerd-icons
+;;   :ensure t)
 
 ;; (use-package doom-themes
 ;;   :ensure t
 ;;   :config
 ;;   (setq doom-themes-enable-bold t
 ;;         doom-themes-enable-italic t)
-;;   (load-theme 'doom-gruvbox t)
+;;   (load-theme 'doom-tokyo-night t)
 ;;   (doom-themes-org-config)
 ;;   )
 
