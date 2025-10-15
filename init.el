@@ -7,6 +7,7 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (global-display-line-numbers-mode 1)
+(setq display-line-numbers-type 'relative)  ;; Relative line numbers
 (setq show-trailing-whitespace 1)
 
 ;; Package Setup
@@ -19,13 +20,17 @@
 (setq use-package-always-ensure t)
 
 ;; theme
-(use-package gruber-darker-theme)
-(load-theme 'gruber-darker t)
+(load-theme 'modus-vivendi t)
 
 
 ;; magit
 (use-package magit
   :commands (magit-status))
+
+;; git-gutter
+(use-package git-gutter
+  :config
+  (global-git-gutter-mode +1))
 
 ;; which-key
 (use-package which-key
@@ -53,6 +58,24 @@
   (completion-category-overrides '((file (styles partial-completion))))
   (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring
 
+;; corfu - in-buffer completion
+(use-package corfu
+  :init
+  (global-corfu-mode)
+  :config
+  (setq corfu-auto t
+        corfu-auto-delay 0.1
+        corfu-auto-prefix 2
+        corfu-cycle t
+        corfu-preselect 'prompt))
+
+;; cape - completion-at-point extensions
+(use-package cape
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-yasnippet))
+
 ;; multiple-cursors
 (use-package multiple-cursors
   :bind (("C-S-c C-S-c" . mc/edit-lines)
@@ -62,6 +85,7 @@
 ;; auto treesitter config
 (use-package treesit-auto
   :config
+  (setq treesit-auto-install 'prompt)  ; Prompt to install missing grammars
   (global-treesit-auto-mode))
 
 ;; expand-region
@@ -83,23 +107,38 @@
 (use-package go-mode)
 
 (use-package markdown-mode)
-(use-package yasnippet)
 
-;; lsp
-(add-to-list 'load-path "~/.emacs.d/lsp-bridge")
+(use-package yasnippet
+  :config
+  (yas-global-mode 1))
 
-(setq lsp-bridge-python-command "~/.emacs.d/lsp-bridge-env/bin/python")
-(require 'lsp-bridge)
-(global-lsp-bridge-mode)
-(setq lsp-bridge-breadcrumb-mode t)
+;; lsp-mode + lsp-ui
+(use-package lsp-mode
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  :hook ((typescript-mode . lsp-deferred)
+         (tsx-ts-mode . lsp-deferred)
+         (typescript-ts-mode . lsp-deferred)
+         (js-ts-mode . lsp-deferred)
+         (go-mode . lsp-deferred)
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands (lsp lsp-deferred)
+  :config
+  (setq lsp-headerline-breadcrumb-enable t
+        lsp-completion-provider :none)) ;; Use completion-at-point (corfu/cape)
 
-(with-eval-after-load 'lsp-bridge
-  (define-key lsp-bridge-mode-map (kbd "C-c l k") 'lsp-bridge-popup-documentation)
-  (define-key lsp-bridge-mode-map (kbd "C-c l r") 'lsp-bridge-rename)
-  (define-key lsp-bridge-mode-map (kbd "C-c l d") 'lsp-bridge-find-def)
-  (define-key lsp-bridge-mode-map (kbd "C-c l a") 'lsp-bridge-code-action)
-  (define-key lsp-bridge-mode-map (kbd "C-c l f") 'lsp-bridge-find-references)
-  )
+;; Add lsp completion to cape
+(with-eval-after-load 'lsp-mode
+  (with-eval-after-load 'cape
+    (add-to-list 'completion-at-point-functions #'lsp-completion-at-point)))
+
+(use-package lsp-ui
+  :commands lsp-ui-mode
+  :config
+  (setq lsp-ui-doc-enable t
+        lsp-ui-doc-position 'at-point
+        lsp-ui-sideline-enable t
+        lsp-ui-sideline-show-diagnostics t))
 
 
 (defun move-line-up ()
@@ -135,11 +174,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(apheleia consult expand-region go-mode gruber-darker
-	      gruber-darker-theme magit marginalia markdown-mode
-	      multiple-cursors orderless treesit-auto typescript-mode
-	      vertico yasnippet)))
+ '(package-selected-packages nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
