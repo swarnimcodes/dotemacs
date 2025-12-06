@@ -15,6 +15,8 @@
 (global-display-line-numbers-mode 1)
 (setq display-line-numbers-type 'relative)  ;; Relative line numbers
 (setq show-trailing-whitespace 1)
+(setq make-backup-files nil)
+(setq create-lockfiles nil)
 
 ;; Package Setup
 (require 'package)
