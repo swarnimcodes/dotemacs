@@ -26,7 +26,8 @@
 (setq use-package-always-ensure t)
 
 ;; theme
-(load-theme 'modus-vivendi t)
+(use-package gruber-darker-theme)
+(load-theme 'gruber-darker t)
 
 
 ;; magit
@@ -180,7 +181,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
+ '(package-selected-packages
+   '(apheleia cape consult corfu expand-region git-gutter go-mode
+	      gruber-darker-theme lsp-ui magit marginalia
+	      multiple-cursors orderless treesit-auto typescript-mode
+	      vertico yasnippet)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
