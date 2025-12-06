@@ -1,6 +1,12 @@
+
 ;;; init.el --- init file -*- lexical-binding: t; -*-
 
 ;;; Code:
+
+
+;; Font
+(add-to-list 'default-frame-alist
+             '(font . "Iosevka Nerd Font-16"))
 
 (setq inhibit-splash-screen t)
 (menu-bar-mode -1)
