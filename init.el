@@ -1,8 +1,6 @@
-
 ;;; init.el --- init file -*- lexical-binding: t; -*-
 
 ;;; Code:
-
 
 ;; Font
 (add-to-list 'default-frame-alist
@@ -15,8 +13,13 @@
 (global-display-line-numbers-mode 1)
 (setq display-line-numbers-type 'relative)  ;; Relative line numbers
 (setq show-trailing-whitespace 1)
+(setq whitespace-style '(face tabs spaces trailing tab-mark space-mark))
+(global-whitespace-mode 1)
 (setq make-backup-files nil)
 (setq create-lockfiles nil)
+;; Some ELPA packages emit harmless async native-comp warnings on Emacs 30
+;; for optional integrations they probe at compile time.
+(setq native-comp-async-report-warnings-errors nil)
 
 ;; Package Setup
 (require 'package)
@@ -27,10 +30,25 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
+
+;; c3 mode
+(load-file (expand-file-name "simpc3-mode.el" user-emacs-directory))
+
+
+;; envrc
+(use-package envrc
+  :ensure t
+  :config
+  (envrc-global-mode))
+
 ;; theme
 (use-package gruber-darker-theme)
 (load-theme 'gruber-darker t)
 
+;; turepo
+(use-package turepo
+  :ensure t
+  :bind (("C-c g r" . turepo)))
 
 ;; magit
 (use-package magit
@@ -108,14 +126,19 @@
 ;; apheleia
 (use-package apheleia
   :config
+  (add-to-list 'apheleia-formatters
+               '(c3fmt . ("c3fmt" "--stdin" "--stdout"
+                          "--stdin-filepath" filepath)))
+  (add-to-list 'apheleia-mode-alist '(simpc3-mode . c3fmt))
   (apheleia-global-mode +1))
 
 
 ;; languages
 (use-package typescript-mode)
 (use-package go-mode)
-
+(use-package rust-mode)
 (use-package markdown-mode)
+
 
 (use-package yasnippet
   :config
@@ -184,10 +207,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(apheleia cape consult corfu expand-region git-gutter go-mode
+   '(apheleia cape consult corfu envrc expand-region git-gutter go-mode
 	      gruber-darker-theme lsp-ui magit marginalia
-	      multiple-cursors orderless treesit-auto typescript-mode
-	      vertico yasnippet)))
+	      multiple-cursors orderless rust-mode treesit-auto turepo
+	      typescript-mode vertico yasnippet)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
