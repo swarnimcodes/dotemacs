@@ -41,7 +41,7 @@
   (moody-replace-mode-line-buffer-identification)
   (moody-replace-vc-mode))
 
-;; collapse the minor-mode list (yas, WK, GitGutter, ...) into one menu
+;; collapse the minor-mode list (yas, WK, ...) into one menu
 (use-package minions
   :config
   (setq minions-mode-line-lighter "…")
@@ -75,10 +75,16 @@
 (use-package magit
   :commands (magit-status))
 
-;; git-gutter
-(use-package git-gutter
+;; diff-hl
+(use-package diff-hl
+  :custom
+  (diff-hl-draw-borders nil)
+  :hook ((magit-pre-refresh  . diff-hl-magit-pre-refresh)
+         (magit-post-refresh . diff-hl-magit-post-refresh)
+         (dired-mode         . diff-hl-dired-mode))
   :config
-  (global-git-gutter-mode +1))
+  (global-diff-hl-mode)
+  (diff-hl-flydiff-mode))
 
 ;; which-key
 (use-package which-key
