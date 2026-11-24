@@ -86,6 +86,15 @@
   (global-diff-hl-mode)
   (diff-hl-flydiff-mode))
 
+;; pdf-tools - PDF viewer (first use compiles the epdfinfo server)
+(use-package pdf-tools
+  :config
+  (pdf-loader-install)
+  (add-hook 'pdf-view-mode-hook (lambda () (display-line-numbers-mode -1)))
+  ;; live update: reload the PDF whenever it changes on disk
+  (add-hook 'pdf-view-mode-hook #'auto-revert-mode)
+  (setq auto-revert-interval 0.5))
+
 ;; mistty - terminal with Emacs-style command-line editing
 (use-package mistty
   :bind (("C-c s" . mistty)))
