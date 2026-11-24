@@ -32,8 +32,25 @@
 
 
 ;; c3 mode
-(load-file (expand-file-name "simpc3-mode.el" user-emacs-directory))
+;; (load-file (expand-file-name "simpc3-mode.el" user-emacs-directory))
 
+;; modeline
+(use-package moody
+  :config
+  (moody-replace-mode-line-front-space)
+  (moody-replace-mode-line-buffer-identification)
+  (moody-replace-vc-mode))
+
+;; collapse the minor-mode list (yas, WK, GitGutter, ...) into one menu
+(use-package minions
+  :config
+  (setq minions-mode-line-lighter "…")
+  (minions-mode 1))
+
+;; typst
+(use-package typst-ts-mode
+  :ensure t
+  :mode "\\.typ\\'")
 
 ;; envrc
 (use-package envrc
@@ -42,8 +59,12 @@
   (envrc-global-mode))
 
 ;; theme
-(use-package gruber-darker-theme)
-(load-theme 'gruber-darker t)
+;; (use-package gruber-darker-theme)
+;; (load-theme 'gruber-darker t)
+(use-package ef-themes)
+(add-to-list 'custom-theme-load-path
+             (expand-file-name "themes/" user-emacs-directory))
+(load-theme 'ef-tokyo-night t)
 
 ;; turepo
 (use-package turepo
@@ -84,24 +105,6 @@
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles partial-completion))))
   (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring
-
-;; corfu - in-buffer completion
-(use-package corfu
-  :init
-  (global-corfu-mode)
-  :config
-  (setq corfu-auto t
-        corfu-auto-delay 0.1
-        corfu-auto-prefix 2
-        corfu-cycle t
-        corfu-preselect 'prompt))
-
-;; cape - completion-at-point extensions
-(use-package cape
-  :init
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-yasnippet))
 
 ;; multiple-cursors
 (use-package multiple-cursors
@@ -144,35 +147,6 @@
   :config
   (yas-global-mode 1))
 
-;; lsp-mode + lsp-ui
-(use-package lsp-mode
-  :init
-  (setq lsp-keymap-prefix "C-c l")
-  :hook ((typescript-mode . lsp-deferred)
-         (tsx-ts-mode . lsp-deferred)
-         (typescript-ts-mode . lsp-deferred)
-         (js-ts-mode . lsp-deferred)
-         (go-mode . lsp-deferred)
-         (lsp-mode . lsp-enable-which-key-integration))
-  :commands (lsp lsp-deferred)
-  :config
-  (setq lsp-headerline-breadcrumb-enable t
-        lsp-completion-provider :none)) ;; Use completion-at-point (corfu/cape)
-
-;; Add lsp completion to cape
-(with-eval-after-load 'lsp-mode
-  (with-eval-after-load 'cape
-    (add-to-list 'completion-at-point-functions #'lsp-completion-at-point)))
-
-(use-package lsp-ui
-  :commands lsp-ui-mode
-  :config
-  (setq lsp-ui-doc-enable t
-        lsp-ui-doc-position 'at-point
-        lsp-ui-sideline-enable t
-        lsp-ui-sideline-show-diagnostics t))
-
-
 (defun move-line-up ()
   "Move up the current line."
   (interactive)
@@ -207,10 +181,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(apheleia cape consult corfu envrc expand-region git-gutter go-mode
-	      gruber-darker-theme lsp-ui magit marginalia
+   '(apheleia consult envrc expand-region git-gutter go-mode
+	      gruber-darker-theme magit marginalia moody
 	      multiple-cursors orderless rust-mode treesit-auto turepo
-	      typescript-mode vertico yasnippet)))
+	      typescript-mode typst-ts-mode vertico yasnippet)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
