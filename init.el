@@ -4,7 +4,7 @@
 
 ;; Font
 (add-to-list 'default-frame-alist
-             '(font . "Iosevka Nerd Font-16"))
+             '(font . "Iosevka Nerd Font-18"))
 
 (setq inhibit-splash-screen t)
 (menu-bar-mode -1)
@@ -85,6 +85,10 @@
   :config
   (global-diff-hl-mode)
   (diff-hl-flydiff-mode))
+
+;; mistty - terminal with Emacs-style command-line editing
+(use-package mistty
+  :bind (("C-c s" . mistty)))
 
 ;; which-key
 (use-package which-key
